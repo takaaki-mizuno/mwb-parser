@@ -1,0 +1,13 @@
+/vendor
+
+composer.phar
+.DS_Store
+Thumbs.db
+#*#
+*~
+*.swp
+.#
+.idea
+
+.php_cs.cache
+
