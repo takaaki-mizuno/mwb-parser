@@ -45,6 +45,9 @@ class Index extends Base
     /** @var array */
     protected $columnIds;
 
+    /** @var string */
+    protected $name;
+
     public function parse()
     {
         $this->columnIds = [];
@@ -62,6 +65,11 @@ class Index extends Base
         }
     }
 
+    protected function parseSpecificAttributes()
+    {
+        $this->name = $this->getValue('name');
+    }
+
     public function resolveColumns($columns)
     {
         foreach ($this->columnIds as $id) {
@@ -69,5 +77,21 @@ class Index extends Base
                 $this->columns = $columns[$id];
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

@@ -30,22 +30,31 @@ class Column extends Base
     /** @var array */
     protected $attributes;
 
+    /** @var string */
     protected $id;
 
+    /** @var string */
     protected $name;
 
+    /** @var bool */
     protected $nullable;
 
+    /** @var mixed */
     protected $defaultValue;
 
+    /** @var bool */
     protected $autoIncrement;
 
+    /** @var string */
     protected $type;
 
+    /** @var int */
     protected $length;
 
+    /** @var int */
     protected $precision;
 
+    /** @var int */
     protected $scale;
 
     public function parse()
@@ -69,7 +78,7 @@ class Column extends Base
         $this->autoIncrement = (bool) $this->getValue('autoIncrement');
         $this->length        = (int) $this->getValue('length');
         $this->precision     = (int) $this->getValue('length');
-        $this->precision     = (int) $this->getValue('scale');
+        $this->scale         = (int) $this->getValue('scale');
     }
 
     protected function parseType()
@@ -79,18 +88,67 @@ class Column extends Base
         $this->type = $elements[count($elements) - 1];
     }
 
+    /**
+     * @return string
+     */
     public function getId()
     {
         return $this->id;
     }
 
-    public function getName()
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getType()
+    /**
+     * @return string
+     */
+    public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLength(): int
+    {
+        return $this->length;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrecision(): int
+    {
+        return $this->precision;
+    }
+
+    /**
+     * @return int
+     */
+    public function getScale(): int
+    {
+        return $this->scale;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getNullable(): bool
+    {
+        return $this->nullable;
     }
 }
