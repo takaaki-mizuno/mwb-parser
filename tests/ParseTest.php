@@ -18,7 +18,7 @@ class ParserTest extends Base
         foreach ($tables as $table) {
             print '>'.$table->getName().PHP_EOL;
             foreach ($table->getColumns() as $column) {
-                print ' >>>'.$column->getName().' '.$column->getType().PHP_EOL;
+                print ' >>>'.$column->getName().' '.$column->getUnsigned().' '.$column->getType().PHP_EOL;
             }
         }
     }

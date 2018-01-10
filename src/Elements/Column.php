@@ -57,6 +57,9 @@ class Column extends Base
     /** @var int */
     protected $scale;
 
+    /** @var bool */
+    protected $unsigned;
+
     public function parse()
     {
         foreach ($this->object->value as $value) {
@@ -66,8 +69,23 @@ class Column extends Base
             }
         }
 
+        $this->parseFlags();
         $this->parseSpecificAttributes();
         $this->parseType();
+    }
+
+    protected function parseFlags()
+    {
+        $this->unsigned = false;
+        $flags          = $this->object->xpath('value[@key="flags"]');
+        foreach ($flags as $flag) {
+            $values         = $flag->xpath('value');
+            foreach ($values as $value) {
+                if ((string) $value == 'UNSIGNED') {
+                    $this->unsigned = true;
+                }
+            }
+        }
     }
 
     protected function parseSpecificAttributes()
@@ -150,5 +168,13 @@ class Column extends Base
     public function getNullable(): bool
     {
         return $this->nullable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUnsigned(): bool
+    {
+        return $this->unsigned;
     }
 }
