@@ -11,3 +11,6 @@ Thumbs.db
 
 .php_cs.cache
 
+data/db/*
+data/db.mwb.bak
+data/db.zip

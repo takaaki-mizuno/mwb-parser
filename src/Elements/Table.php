@@ -3,24 +3,35 @@ namespace TakaakiMizuno\MWBParser\Elements;
 
 class Table extends Base
 {
+    /** @var string */
+    protected $id;
+
     /** @var string $name */
     protected $name;
 
     /** @var \TakaakiMizuno\MWBParser\Elements\Column[] */
-    protected $columns;
+    protected $columns = [];
 
     /** @var \TakaakiMizuno\MWBParser\Elements\Index[] */
-    protected $indexes;
+    protected $indexes = [];
 
     /** @var \TakaakiMizuno\MWBParser\Elements\ForeignKey[] */
-    protected $foreignKeys;
+    protected $foreignKeys = [];
 
     public function parse()
     {
+        $this->id = (string) $this->object['id'];
+
         $this->parseName();
         $this->parseColumns();
-        $this->parseIndexes();
-        $this->parseForeignKey();
+
+        $ids = [];
+        foreach ($this->columns as $column) {
+            $ids[$column->getId()] = $column;
+        }
+
+        $this->parseIndexes($ids);
+        $this->parseForeignKey($ids);
     }
 
     protected function parseName()
@@ -36,26 +47,42 @@ class Table extends Base
         }
     }
 
-    protected function parseIndexes()
+    protected function parseIndexes($ids)
     {
-        $ids = [];
-        foreach ($this->columns as $column) {
-            $ids[$column->getId()] = $column;
-        }
         $indexes = $this->object->xpath('.//value[@struct-name="db.mysql.Index"]');
         foreach ($indexes as $index) {
             $indexElement = new Index($index);
             $indexElement->resolveColumns($ids);
-            $this->indexes[] = new Index($index);
+            $this->indexes[] = $indexElement;
         }
     }
 
-    protected function parseForeignKey()
+    protected function parseForeignKey($ids)
     {
         $foreignKeys = $this->object->xpath('.//value[@struct-name="db.mysql.ForeignKey"]');
         foreach ($foreignKeys as $foreignKey) {
-            $this->foreignKeys[] = new ForeignKey($foreignKey);
+            $foreignKeyElement = new ForeignKey($foreignKey);
+            $foreignKeyElement->resolveColumns($ids);
+            $this->foreignKeys[] = $foreignKeyElement;
         }
+    }
+
+    /**
+     * @param \TakaakiMizuno\MWBParser\Elements\Table[] $tables
+     */
+    public function resolveForeignKeyReference($tables)
+    {
+        foreach ($this->foreignKeys as $index => $foreignKey) {
+            $this->foreignKeys[$index]->resolveReferencedTableAndColumn($tables);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -88,5 +115,21 @@ class Table extends Base
     public function getForeignKey()
     {
         return $this->foreignKeys;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return null|\TakaakiMizuno\MWBParser\Elements\Column
+     */
+    public function getColumnById(string $id)
+    {
+        foreach ($this->columns as $column) {
+            if ($column->getId() === $id) {
+                return $column;
+            }
+        }
+
+        return null;
     }
 }

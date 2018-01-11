@@ -28,7 +28,7 @@ class Column extends Base
      </value>
      */
     /** @var array */
-    protected $attributes;
+    protected $attributes = [];
 
     /** @var string */
     protected $id;
@@ -62,8 +62,9 @@ class Column extends Base
 
     public function parse()
     {
+        $this->id = (string) $this->object['id'];
+
         foreach ($this->object->value as $value) {
-            $this->id = (string) $this->object['id'];
             if (in_array((string) $value['type'], ['int', 'string'])) {
                 $this->attributes[(string) $value['key']] = (string) $value;
             }
@@ -165,7 +166,7 @@ class Column extends Base
     /**
      * @return bool
      */
-    public function getNullable(): bool
+    public function isNullable(): bool
     {
         return $this->nullable;
     }
@@ -173,7 +174,7 @@ class Column extends Base
     /**
      * @return bool
      */
-    public function getUnsigned(): bool
+    public function isUnsigned(): bool
     {
         return $this->unsigned;
     }

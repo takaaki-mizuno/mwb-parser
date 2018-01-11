@@ -91,6 +91,13 @@ class Parser
         foreach ($tables as $table) {
             $this->tables[] = new Table($table);
         }
+        $tableIds = [];
+        foreach ($this->tables as $table) {
+            $tableIds[$table->getId()] = $table;
+        }
+        foreach ($this->tables as $table) {
+            $table->resolveForeignKeyReference($tableIds);
+        }
     }
 
     /**

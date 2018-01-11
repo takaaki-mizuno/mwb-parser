@@ -19,19 +19,24 @@ abstract class Base
 
     /**
      * @param string $key
+     * @param mixed  $default
      *
-     * @return null|string
+     * @return mixed
      */
-    public function getValue($key)
+    public function getValue($key, $default = null)
     {
         $keys = $this->object->xpath('value[@key="'.$key.'"]');
         if (count($keys) > 0) {
-            $value = (string) $keys[0];
+            if ($keys[0]['type'] == 'int') {
+                $value = (int) $keys[0];
+            } else {
+                $value = (string) $keys[0];
+            }
 
             return $value;
         }
 
-        return null;
+        return $default;
     }
 
     public function getLink($key)
@@ -46,5 +51,10 @@ abstract class Base
         return null;
     }
 
+    /**
+     * @param array $columns
+     *
+     * @return mixed
+     */
     abstract public function parse();
 }

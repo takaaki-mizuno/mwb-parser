@@ -39,48 +39,75 @@ class Index extends Base
      */
     protected $attributes;
 
-    /** @var array */
-    protected $columns;
+    /** @var string */
+    protected $id;
 
-    /** @var array */
-    protected $columnIds;
+    /** @var bool */
+    protected $primary;
+
+    /** @var bool */
+    protected $unique;
+
+    /** @var \TakaakiMizuno\MWBParser\Elements\Column[] */
+    protected $columns = [];
+
+    /** @var string[] */
+    protected $columnIds = [];
 
     /** @var string */
-    protected $name;
+    protected $name = '';
+
+    /** @var string */
+    protected $comment = '';
 
     public function parse()
     {
+        $this->id = (string) $this->object['id'];
+
         $this->columnIds = [];
         foreach ($this->object->value as $value) {
             if (in_array((string) $value['type'], ['int', 'string'])) {
                 $this->attributes[(string) $value['key']] = (string) $value;
             }
-            $columns = $this->object->xpath('//value[@struct-name="db.mysql.IndexColumn"]');
-            foreach ($columns as $column) {
-                $ids = $column->xpath('link[@struct-name="db.Column"]');
-                if (count($ids) > 0) {
-                    $this->columnIds[] = (string) ($ids[0]);
-                }
+        }
+
+        $columns = $this->object->xpath('.//value[@struct-name="db.mysql.IndexColumn"]');
+        foreach ($columns as $column) {
+            $ids = $column->xpath('link[@struct-name="db.Column"]');
+            foreach ($ids as $id) {
+                $this->columnIds[] = (string) ($id);
             }
         }
+
+        $this->parseSpecificAttributes();
     }
 
     protected function parseSpecificAttributes()
     {
-        $this->name = $this->getValue('name');
+        $this->name    = $this->getValue('name');
+        $this->primary = (bool) $this->getValue('isPrimary');
+        $this->unique  = (bool) $this->getValue('unique');
     }
 
     public function resolveColumns($columns)
     {
         foreach ($this->columnIds as $id) {
             if (array_key_exists($id, $columns)) {
-                $this->columns = $columns[$id];
+                $this->columns[] = $columns[$id];
             }
         }
     }
 
     /**
-     * @return array
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return \TakaakiMizuno\MWBParser\Elements\Column[]
      */
     public function getColumns(): array
     {
@@ -93,5 +120,21 @@ class Index extends Base
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrimary(): bool
+    {
+        return $this->primary;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUnique(): bool
+    {
+        return $this->unique;
     }
 }
