@@ -96,7 +96,7 @@ class Column extends Base
         $this->defaultValue  = $this->getValue('defaultValue');
         $this->autoIncrement = (bool) $this->getValue('autoIncrement');
         $this->length        = (int) $this->getValue('length');
-        $this->precision     = (int) $this->getValue('length');
+        $this->precision     = (int) $this->getValue('precision');
         $this->scale         = (int) $this->getValue('scale');
     }
 
