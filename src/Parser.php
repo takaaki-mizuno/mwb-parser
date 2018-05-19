@@ -6,16 +6,16 @@ use TakaakiMizuno\MWBParser\Elements\Table;
 class Parser
 {
     /** @var string $path */
-    private $path;
+    protected $path;
 
     /** @var string $directory */
-    private $directory;
+    protected $directory;
 
     /** @var \SimpleXMLElement $data */
-    private $data;
+    protected $data;
 
     /** @var \TakaakiMizuno\MWBParser\Elements\Table[] */
-    private $tables;
+    protected $tables;
 
     public function __construct($path)
     {
@@ -27,7 +27,7 @@ class Parser
     /**
      * @return bool|string
      */
-    private function getTemporaryPath()
+    protected function getTemporaryPath()
     {
         $tempDirectory = tempnam(sys_get_temp_dir(), 'mwb');
         @unlink($tempDirectory);
@@ -39,7 +39,7 @@ class Parser
     /**
      * @param string $path
      */
-    private function deleteDirectory($path)
+    protected function deleteDirectory($path)
     {
         if (is_dir($path)) {
             $objects = scandir($path);
@@ -57,7 +57,7 @@ class Parser
         }
     }
 
-    private function extractArchive($file)
+    protected function extractArchive($file)
     {
         $this->path      = $file;
         $this->directory = $this->getTemporaryPath();
@@ -77,7 +77,7 @@ class Parser
         return true;
     }
 
-    private function parse()
+    protected function parse()
     {
         $xml        = file_get_contents($this->directory.DIRECTORY_SEPARATOR.'document.mwb.xml');
         $this->data = new \SimpleXMLElement($xml);
@@ -85,7 +85,7 @@ class Parser
         $this->deleteDirectory($this->directory);
     }
 
-    private function parseXML()
+    protected function parseXML()
     {
         $tables = $this->data->xpath('//value[@struct-name="db.mysql.Table"]');
         foreach ($tables as $table) {
