@@ -178,4 +178,12 @@ class Column extends Base
     {
         return $this->unsigned;
     }
+
+    /**
+     * @return bool
+     */
+    public function getAutoincrement()
+    {
+        return $this->autoIncrement;
+    }
 }
